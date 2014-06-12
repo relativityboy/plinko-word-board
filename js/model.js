@@ -338,23 +338,31 @@ Model.Board = Model.Box.extend({
     detectCollisions: function() {
         console.log(':::::::::::detectCollisions running:');
         var celBox,
-                cels = this.attributes.cels,
-                target = this.attributes.target.attributes.screen;
-
-        if (this.attributes.resetCel.detectScreenCollision(target)) {
-            console.log('reset detected');
-            return;
-        }
-        for (var i = 0; i < cels.length; i++) {
-            if (cels.models[i].detectScreenCollision(target)) {
-                cels.models[i].attributes.$el.addClass('active');
-            } else {
-                cels.models[i].attributes.$el.removeClass('active');
+            cels = this.attributes.cels,
+            target = this.attributes.target.attributes.screen;
+        if(this.attributes.mode == 'setup') {
+            if (this.attributes.resetCel.detectScreenCollision(target)) {
+                console.log('reset detected');
+                return;
+            }
+            for (var i = 0; i < cels.length; i++) {
+                if (cels.models[i].detectScreenCollision(target)) {
+                    cels.models[i].attributes.$el.addClass('active');
+                } else {
+                    cels.models[i].attributes.$el.removeClass('active');
+                }
+            }
+        } else {
+            if (this.attributes.resetCel.detectScreenCollision(target)) {
+                this.resetWords();
+                return;
+            }
+            for (var i = 0; i < cels.length; i++) {
+                if (cels.models[i].detectScreenCollision(target)) {
+                    cels.models[i].setText('a pretty word');
+                } 
             }
         }
-    },
-    tracking: function(active) {
-        return this.attributes.target.tracking(active);
     },
     loadConfiguration: function(e) {
         if (e.height) {
@@ -369,12 +377,23 @@ Model.Board = Model.Box.extend({
             this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
         }*/
     },
+    resetWords:function() {
+        for (var i = 0; i < cels.length; i++) {
+            cels.models[i].setText('');
+        }
+        this.attributes.resetCel.setText('');
+    },
     showCelNumbers: function() {
         var cels = this.attributes.cels;
         for (var i = 0; i < cels.length; i++) {
             cels.models[i].setTextId()
         }
     },
+    tracking: function(active) {
+        return this.attributes.target.tracking(active);
+    },
+    
+    
     toJSON: function() {
         var o = {};
         o.resetCel = this.attributes.resetCel.toJSON();
