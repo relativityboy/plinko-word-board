@@ -5,7 +5,7 @@ Model = {};
             lock = false,
             pause = false;
 
-    
+
     var updateTarget = function(e) {
         //console.log(e);
         target.set('now', {x: e.now.x, y: e.now.y});
@@ -33,9 +33,9 @@ Model = {};
             });
             lock = true;
         }
-        //fetchPointTimeout = setTimeout(fetchPoint, 50);
+        fetchPointTimeout = setTimeout(fetchPoint, 200);
     };
-    
+
     var Target = Backbone.Model.extend({
         defaults: {
             $el: $('ull'),
@@ -84,7 +84,7 @@ Model = {};
                     this.attributes.min.y = this.attributes.now.y;
                 }
             }, this);
-            this.on('change:now', this.calculateScreenPoint, this);
+            this.on('change:now', this.updateScreenPoint, this);
             fetchPoint();
             this.screenMaxY = 0;
             this.cameraMinY = 0;
@@ -106,18 +106,18 @@ Model = {};
                 x: ((cameraPoint.x - this.attributes.cameraoffset.x) * this.attributes.multiplier.x),
                 y: (this.screenMaxY - ((cameraPoint.y - this.cameraMinY) * this.attributes.multiplier.y))
             };
-            
+
         },
         calculateCameraPoint: function(screenPoint) {
             var attrs = this.attributes;
-            console.log(screenPoint.y, 
+            console.log(screenPoint.y,
                 this.attributes.screenoffset)
             var resp = {
                 x: ((screenPoint.x / this.attributes.multiplier.x ) + this.attributes.cameraoffset.x),
                 //y: (this.screenMaxY - ((cameraPoint.y - this.cameraMinY) * this.attributes.multiplier.y)),
                 y: (
-                        this.attributes.cameraoffset.y - 
-                        ((screenPoint.y - this.attributes.screenoffset.y) / 
+                        this.attributes.cameraoffset.y -
+                        ((screenPoint.y - this.attributes.screenoffset.y) /
                         this.attributes.multiplier.y))
             };
             return resp;
@@ -184,7 +184,7 @@ Model.Box = Backbone.Model.extend({
 (function() {
     var newId = 0;
     Model.Cel = Model.Box.extend({
-        
+
         initialize: function() {
             if(!this.id) {
                 newId++;
@@ -219,7 +219,7 @@ Model.Box = Backbone.Model.extend({
             this.attributes.$hz = false;
             this.attributes.$el = false;
             this.attributes.$text = false;
-            
+
             this.on('change:screen change:camera', this.updateHZCoords, this);
         },
         addEl:function($el) {
@@ -237,11 +237,11 @@ Model.Box = Backbone.Model.extend({
         detectScreenCollision:function(coords) {
             var celBox = this.attributes.hotzone.screen;
             return celBox.min.x < coords.x && celBox.min.y < coords.y && celBox.max.x > coords.x && celBox.max.y > coords.y;
-            
+
         },
         updateScreenCoords:function(coords) {
             var hzPos = this.attributes.$hz.position();
-            this.attributes.screen = { 
+            this.attributes.screen = {
                 min:{
                     x:coords.x,
                     y:coords.y
@@ -251,8 +251,8 @@ Model.Box = Backbone.Model.extend({
                     y:coords.y + this.attributes.$el.height()
                 }
             };
-            
-            this.attributes.hotzone.screen = { 
+
+            this.attributes.hotzone.screen = {
                 min:{
                     x:coords.x + hzPos.left,
                     y:coords.y + hzPos.top
@@ -262,7 +262,7 @@ Model.Box = Backbone.Model.extend({
                     y:coords.y + hzPos.top + this.attributes.$hz.height()
                 }
             };
-            
+
         },
         updateCameraCoordsByScreenCoords:function() {
             this.attributes.camera.min = Model.Target().calculateCameraPoint(this.attributes.screen.min);
@@ -272,7 +272,7 @@ Model.Box = Backbone.Model.extend({
             this.trigger('change:camera');
         },
         updateHZCoords:function() {
-            
+
         },
         toJSON:function() {
             var o = {};
@@ -333,13 +333,13 @@ Model.Board = Model.Box.extend({
     calcServerCoords:function() {
         for(var i = 0; i < this.attributes.cels.length; i++) {
             console.log(this.attributes.cels.models)
-           this.attributes.cels.models[i].updateCameraCoordsByScreenCoords(); 
+           this.attributes.cels.models[i].updateCameraCoordsByScreenCoords();
         };
     },
     detectCollisions:function() {
         console.log(':::::::::::detectCollisions running:');
         var //$el,
-            celBox, 
+            celBox,
             cels = this.attributes.cels,
             target = this.attributes.target.attributes.screen;
         for(var i = 0; i < cels.length; i++) {

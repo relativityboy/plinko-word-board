@@ -32,8 +32,11 @@ for ($i = 0; $i < $pegs; $i++) {
 		</style>
 		<link type="text/css" rel="stylesheet" href="css/main.css"/>
 		<script type='text/javascript' src="js/jquery.js"></script>
+		<script type='text/javascript'>
+			appRoot = '/northernspark/';
+		</script>
                 <script type='text/javascript' src="js/jquery-ui-1.10.4.custom.js"></script>
-                
+
 		<script type='text/javascript' src="js/underscore.js"></script>
 		<script type='text/javascript' src="js/backbone.js"></script>
 		<script type='text/javascript' src="js/jquery.orange.js"></script>

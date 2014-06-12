@@ -44,7 +44,7 @@ View.ControlPanel = Backbone.View.extend({
             this.$calibrationStatus.css({opacity: 1});
             this.$calibrationControls.removeAttr('disabled');
             this.model.showCelNumbers();
-            
+
             $('body').addClass('calibrating');
         } else {
             this.model.set('calibrating', false);
@@ -57,13 +57,13 @@ View.ControlPanel = Backbone.View.extend({
     evtToggleCollisionDetection: function() {
         var enableCollisionDetection = (this.model.get('enableCollisionDetection'))? false : true;
         this.model.set('enableCollisionDetection', enableCollisionDetection);
-        
+
         if(enableCollisionDetection) {
             $('.w-toggle-collision-detection').val('Disable Coll Detection');
         } else {
             $('.w-toggle-collision-detection').val('Enable Coll Detection');
         }
-        
+
     },
     evtSetMin: function() {
         this.model.calculateOffset();
@@ -72,7 +72,7 @@ View.ControlPanel = Backbone.View.extend({
     evtLoadCels: function() {
        var z = this;
        $.ajax({
-          url:'../cel.json', 
+          url: appRoot+'cel.json',
           type:'get',
           success:function(e) {
               for(var i = 0; i < e.cels.length; i++) {
@@ -83,11 +83,11 @@ View.ControlPanel = Backbone.View.extend({
               }
               console.log(e, z.model.attributes);
           }
-      }); 
+      });
     },
     evtSaveCels: function() {
       $.ajax({
-          url:'../savecels.php', 
+          url:appRoot+'savecels.php',
           type:'POST',
           data:{
               celJSON:this.model.toJSON()
@@ -152,13 +152,13 @@ View.Cels = Backbone.View.extend({
         this.$el.snippetAppend('peg', cel);
         cel.addEl($('#cel__' + cel.id));
         cel.attributes.$el.draggable();
-        cel.attributes.$el.on( "dragstop", 
-        function( e, ui ) { 
+        cel.attributes.$el.on( "dragstop",
+        function( e, ui ) {
             cel.updateScreenCoords({
                 x:ui.position.left,
                 y:ui.position.top
             });
-             /*       attributes.screen = { 
+             /*       attributes.screen = {
                 min:{
                     x:ui.position.left,
                     y:ui.position.top
