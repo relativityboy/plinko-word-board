@@ -85,7 +85,6 @@ Model = {};
             }, this);
             this.on('change:now', this.calculateScreenPoint, this);
             fetchPoint();
-            console.log('initializing Target');
             this.screenMaxY = 0;
             this.cameraMinY = 0;
         },
@@ -96,20 +95,16 @@ Model = {};
         calculateMultiplier: function(screenMax) {
             this.screenMaxY = screenMax.y;
             this.cameraMinY = this.attributes.now.y;
-            console.log('calculateMultiplier camoffset, now(max cam), screenoffset, point(max screen)', this.attributes.cameraoffset, this.attributes.now, this.attributes.screenoffset, screenMax);
             this.attributes.multiplier = {
                 x: ((screenMax.x - this.attributes.screenoffset.x) / (this.attributes.now.x - this.attributes.cameraoffset.x)),
                 y: ((screenMax.y - this.attributes.screenoffset.y) / (this.attributes.cameraoffset.y - this.attributes.now.y))
             };
-            console.log('multiplier', this.attributes.multiplier, this.screenMaxY)
-            
         },
         calculateScreenPoint: function() {
             this.attributes.screen = {
                 x: ((this.attributes.now.x - this.attributes.cameraoffset.x) * this.attributes.multiplier.x),
                 y: (this.screenMaxY - ((this.attributes.now.y - this.cameraMinY) * this.attributes.multiplier.y))
             };
-            console.log('calculateScreenPoint screen, multi, camMin:', this.attributes.screen, this.attributes.multiplier, this.cameraMinY, this.attributes.now, this.screenMaxY);
             this.trigger('change:screen');
         },
         pauseTracking: function() {
@@ -209,7 +204,6 @@ Model.Box = Backbone.Model.extend({
           this.attributes.$txt.text(this.id);
         },
         updateScreenCoords:function(coords) {
-            console.log(coords);
             this.set('screen', { 
                 min:{
                     x:coords.x,
@@ -260,7 +254,6 @@ Model.Board = Model.Box.extend({
 
     },
     calculateOffset: function() {
-        console.log('calculateOffset', this.attributes.screen.min)
         this.attributes.target.calculateOffset(this.attributes.screen.min);
         this.calculateMultiplier();
     },
