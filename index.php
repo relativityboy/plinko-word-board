@@ -33,7 +33,7 @@ for ($i = 0; $i < $pegs; $i++) {
 		<link type="text/css" rel="stylesheet" href="css/main.css"/>
 		<script type='text/javascript' src="js/jquery.js"></script>
 		<script type='text/javascript'>
-			appRoot = '/northernspark/';
+			appRoot = '/';
 		</script>
                 <script type='text/javascript' src="js/jquery-ui-1.10.4.custom.js"></script>
 
@@ -45,6 +45,7 @@ for ($i = 0; $i < $pegs; $i++) {
                 <script type='text/javascript' src="js/main.js"></script>
 	</head>
 	<body><div id='board' class="board">
+                <div id='setup-banner' class='w-setup-banner setup-banner'>SETUP</div>
 			<div id="banner" class="banner"></div>
 			<table>
 	<?php
@@ -61,22 +62,32 @@ for ($i = 0; $i < $pegs; $i++) {
                         <div class='w-calibration-point-max calibration-point'></div>
                         <div class='w-calibration-point-target calibration-point calibration-point-circle' style="z-index:2000"></div>
 		</div>
-		<div class="w-show-controlpanel show-controlpanel"></div>
+		<div class="w-mode-setup show-controlpanel"></div>
 		<div class="w-controlpanel controlpanel">
-                    <a href="#" class="w-hide-settings btn-hide-settings">hide</a>
+                    <a href="#" class="w-hide-settings btn-hide-settings">run</a>
+                    <div class="w-configuration">
+                        <h4 class='subheader'>Board Config 
+                            <input class='w-save-cels btn' type='button' value='Save'/>
+                            <input class='w-load-config btn' type='button' value='Load'/>
+                        </h4>
+                        <ul>
+                            <li><span class='inline-h4'>height</span><input class="w-board-height" value=''/></li>
+                            <li><label class='inline-h4'>width</label><input class="w-board-width" value=''/></li>
+                        </ul>
+                    </div>
                     <div class="w-calibration">
-                        <h4 class='calibration'>Calibration <span class='w-calibration-status calibration-status'>active</span><input class='w-toggle-calibration btn' type='button' value='enable calibration'></h4>
+                        <h4 class='subheader'>Calibration <!--span class='w-calibration-status calibration-status'>active</span><input class='w-toggle-calibration btn' type='button' value='enable calibration'--></h4>
                         <div class='w-corner-confirm-panel'>
                             <ul>
-                                <li><span class='inline-h4'>tracking: </span>x:<span class='w-x'></span>, y:<span class='w-y'></span></li>
-                                <li><span class='inline-h4'><input class='w-set-min w-calibration-ctrl' type='button' value='set upper left' disabled/></span></li>
-                                <li><span class='inline-h4'><input class='w-set-max w-calibration-ctrl' type='button' value='set lower right' disabled/></span></li>
+                                <li><span class='inline-h4'><input class='w-set-min w-tracking-ctrl' type='button' value='tracking'/>: </span>x:<span class='w-x'></span>, y:<span class='w-y'></span></li>
+                                <li><span class='inline-h4'><input class='w-set-min w-calibration-ctrl' type='button' value='set top left'/></span></li>
+                                <li><span class='inline-h4'><input class='w-set-max w-calibration-ctrl' type='button' value='set bot right'/></span></li>
                             </ul>
                         </div>
                     </div>
                     <div>
-                        <h4 class='calibration'>Cels <input class='w-add-cel btn' type='button' value='Add Cel'><input class='w-save-cels btn' type='button' value='Save Cels'/>
-                            <input class='w-load-cels btn' type='button' value='Load Cels'/></h4>
+                        <h4 class='subheader'>Cels <input class='w-add-cel btn' type='button' value='Add Cel'>
+                            </h4>
                         <div>
                             <input class="w-calculate-camera-coordinates" type='button' value='Calc Server Coords'>
                             <input class='w-toggle-collision-detection' type='button' value='Enable Coll Detection'/></div>

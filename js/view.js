@@ -9,13 +9,16 @@ View = {};
 
 View.ControlPanel = Backbone.View.extend({
     events: {
+        'change .w-board-width': 'evtBoardSize',
+        'change .w-board-height': 'evtBoardSize',
         'click .w-hide-settings': 'evtHide',
         'click .w-toggle-calibration': 'evtToggleCalibration',
+        'click .w-tracking-ctrl': 'evtToggleTracking',
         'click .w-set-min': 'evtSetMin',
         'click .w-set-max': 'evtSetMax',
         'click .w-add-cel': 'evtAddCel',
         'click .w-save-cels': 'evtSaveCels',
-        'click .w-load-cels': 'evtLoadCels',
+        'click .w-load-config': 'evtLoadConfiguration',
         'click .w-toggle-collision-detection':'evtToggleCollisionDetection',
         'click .w-calculate-camera-coordinates':'evtCalcCelCameraCoords'
     },
@@ -31,11 +34,16 @@ View.ControlPanel = Backbone.View.extend({
     evtAddCel: function() {
         this.model.createCell();
     },
+    evtBoardSize: function() {
+        var val = {'width': $('.w-board-width').val(), 'height': $('.w-board-height').val()}
+        this.model.set(val);
+        
+    },
     evtCalcCelCameraCoords:function() {
         this.model.calcServerCoords();
     },
     evtHide: function() {
-        this.$el.hide();
+        this.model.set('mode', 'run');
     },
     evtToggleCalibration: function() {
         if (!this.model.get('calibrating')) {
@@ -45,13 +53,30 @@ View.ControlPanel = Backbone.View.extend({
             this.$calibrationControls.removeAttr('disabled');
             this.model.showCelNumbers();
 
-            $('body').addClass('calibrating');
+            $('body').addClass('setup');
         } else {
             this.model.set('calibrating', false);
             this.$toggleCalibration.val('enable calibration');
             this.$calibrationStatus.css({opacity: 0});
             this.$calibrationControls.attr('disabled', 'disabled');
-            $('body').removeClass('calibrating');
+            $('body').removeClass('setup');
+        }
+    },
+    evtToggleTracking:function() {
+        if (!this.model.get('calibrating')) {
+            this.model.set('calibrating', true);
+            this.$toggleCalibration.val('disable calibration');
+            this.$calibrationStatus.css({opacity: 1});
+            this.$calibrationControls.removeAttr('disabled');
+            this.model.showCelNumbers();
+
+            $('body').addClass('setup');
+        } else {
+            this.model.set('calibrating', false);
+            this.$toggleCalibration.val('enable calibration');
+            this.$calibrationStatus.css({opacity: 0});
+            this.$calibrationControls.attr('disabled', 'disabled');
+            $('body').removeClass('setup');
         }
     },
     evtToggleCollisionDetection: function() {
@@ -69,10 +94,10 @@ View.ControlPanel = Backbone.View.extend({
         this.model.calculateOffset();
 
     },
-    evtLoadCels: function() {
+    evtLoadConfiguration: function() {
        var z = this;
        $.ajax({
-          url: appRoot+'cel.json',
+          url: appRoot+'configuration.json',
           type:'get',
           success:function(e) {
               for(var i = 0; i < e.cels.length; i++) {
@@ -158,32 +183,36 @@ View.Cels = Backbone.View.extend({
                 x:ui.position.left,
                 y:ui.position.top
             });
-             /*       attributes.screen = {
-                min:{
-                    x:ui.position.left,
-                    y:ui.position.top
-                },
-                max:{
-                    x:ui.position.left + cel.attributes.$el.width(),
-                    y:ui.position.top + cel.attributes.$el.height()
-                }
-            };*/
         } );
     },
 });
 
 View.Page = Backbone.View.extend({
     events: {
-        'click .w-show-controlpanel': 'evtShowControlPanel'
+        'click .w-mode-setup': 'evtModeSetup'
     },
     initialize: function() {
-        $board = $('#board', this.el);
+        $board = this.model.$el;
         this.views = {};
         this.views.controlPanel = new View.ControlPanel({el: $('.w-controlpanel')[0], model: this.model});
         this.views.calibrationPoints = new View.CalibrationPoints({el: $board[0], model: this.model});
         this.views.cels = new View.Cels({el: $board[0], model: this.model});
+        this.model.on('change:mode', this.evtChangeMode, this);
+        this.model.on('change:width change:height', this.evtBoardSize, this);
     },
-    evtShowControlPanel: function() {
-        this.views.controlPanel.show();
+    evtBoardSize:function() {
+        console.log('fadf');
+        console.log(this)
+        this.model.$el.css({width:this.model.get('width'), height:this.model.get('height')});
+    },
+    evtChangeMode:function() {
+      if(this.model.get('mode') === 'setup') {
+        this.$el.addClass('setup');  
+      } else {
+        this.$el.removeClass('setup');  
+      }
+    },
+    evtModeSetup: function() {
+        this.model.set('mode', 'setup');
     }
 });

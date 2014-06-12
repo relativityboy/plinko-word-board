@@ -9,49 +9,6 @@ body {
     margin:0px;
 }
 
-div.controlpanel {
-    padding:5px;
-    position:absolute; left:0px; top:0px; width:300px; height:600px; border:1px solid blue;
-    background:#AAAAAA;
-    font-family:Helvetica;
-}
-
-body.calibrating div.controlpanel,
-body.calibrating div.board {
-	background:#888888;
-}
-
-div.controlpanel h4 {
-    margin-bottom:5px;
-}
-
-div.controlpanel h4 .btn {
-    float:right;
-}
-
-div.controlpanel h4.calibration .calibration-status {
-    opacity:0;
-
-}
-
-div.controlpanel ul {
-    margin-top:5px;
-    list-style:none;
-    list-style-position: outside;
-    border:1px solid blue;
-}
-div.controlpanel li {
-    border:1px solid orange;
-    margin-left:-40px;
-}
-
-div.controlpanel .inline-h4 {
-    display:inline-block;
-    width:80px;
-    padding:0px 3px;
-}
-
-
 div.board {
     position:relative;
     background:#AAAAAA;
@@ -82,6 +39,52 @@ div.board .calibration-point-circle {
     opacity: 1;
 }
 
+div.controlpanel {
+    padding:5px;
+    position:absolute; left:0px; top:0px; width:300px; height:600px; border:1px solid blue;
+    background:#AAAAAA;
+    font-family:Helvetica;
+    display:none;
+}
+
+body.setup div.controlpanel,
+body.setup div.board {
+	background:#888888;
+}
+
+div.controlpanel h4 {
+    margin-bottom:5px;
+}
+
+div.controlpanel h4 .btn {
+    float:right;
+}
+
+div.controlpanel h4.subheader .calibration-status {
+    opacity:0;
+
+}
+
+div.controlpanel ul {
+    margin-top:5px;
+    list-style:none;
+    list-style-position: outside;
+    border:1px solid blue;
+}
+div.controlpanel li {
+    border:1px solid orange;
+    margin-left:-40px;
+}
+
+div.controlpanel .inline-h4 {
+    display:inline-block;
+    width:80px;
+    padding:0px 3px;
+}
+
+
+
+
 div.cel {
 	display:inline-block; border:1px solid blue; margin:2px;
 	width:100px;
@@ -89,8 +92,24 @@ div.cel {
 	position:relative;
 	opacity:0;
 }
+div.setup-banner {
+    position:relative;
+    display:block;
+    opacity:0;
+    width:100%;
+    padding:0px;
+    height:30px;
+    font-family: Arial;
+    text-align: center;
+    padding-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #DDDDDD;
+}
 div.banner {
-	position:relative;
+	position:absolute;
+        left:0px;
+        top:10px;
 	display:block;
 	width:100%;
 	padding:10px;
@@ -152,14 +171,24 @@ div.show-controlpanel {
     opacity: 1;
 }
 
-body.calibrating .peg {
+
+/*When in Setup*/
+body.setup .peg {
     background:#CCCCCC;
 }
-body.calibrating .peg-hotzone {
+body.setup .peg-hotzone {
     
     opacity:1;
 }
 
-body.calibrating .peg.active .peg-hotzone {
+body.setup .peg.active .peg-hotzone {
     background: white;
+}
+
+body.setup div.setup-banner {
+    opacity:1;
+}
+
+body.setup div.controlpanel {
+    display:block;
 }

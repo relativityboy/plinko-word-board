@@ -83,11 +83,12 @@ $(document).ready(function() {
     board = new Model.Board({$el: $('#board'), target: target});
 
     pageView = new View.Page({el: $('body')[0], model: board});
-    $cels = $('div.w-cel');
+    /*$cels = $('div.w-cel');
     $cels.each(function(i) {
         cels[i] = $(this);
     });
-    $banner = $('#banner');
+    $banner = $('#banner');*/
+    board.set('mode', 'setup');
     //fetchShowlist();
     
     function test(id) {

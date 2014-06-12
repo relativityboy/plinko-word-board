@@ -122,11 +122,9 @@ Model = {};
             };
             return resp;
         },
-        pauseTracking: function() {
-            pause = true;
-        },
-        resumeTracking: function() {
-            pause = false;
+        enableTracking: function(active) {
+          pause = (active)? true : false;
+          return pause;
         },
         updateCameraPoint:function() {
             this.attributes.camera = this.calculateCameraPoint(this.attributes.now);
@@ -349,6 +347,9 @@ Model.Board = Model.Box.extend({
                 cels.models[i].attributes.$el.removeClass('active');
             }
         }
+    },
+    enableTracking:function(active) {
+        return this.attributes.target.enableTracking(active);
     },
     showCelNumbers:function() {
         var cels = this.attributes.cels;
