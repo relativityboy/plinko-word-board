@@ -46,7 +46,10 @@ for ($i = 0; $i < $pegs; $i++) {
 	</head>
 	<body><div id='board' class="board">
                 <div id='setup-banner' class='w-setup-banner setup-banner'>SETUP</div>
-                <div id="word-banner" class="w-word-banner word-banner"><span>some text</span> some more text</div>
+                <div id="word-banner" class="w-word-banner word-banner">
+                    <div class='w-hotzone reset-hotzone'></div>
+                    <div class='w-text-display text-display'><span>some text</span> some more text</div>    
+                </div>
 			<table>
 	<?php
 	foreach ($tableStructure as $tr) {
@@ -98,7 +101,7 @@ for ($i = 0; $i < $pegs; $i++) {
                     <div id='cel__{id}' class='peg w-draggable' style='left:{attributes.screen.min.x}px; top:{attributes.screen.min.y}px;'>
                         <div class='w-hotzone peg-hotzone'></div>
                         <div class='peg-text-display-wrapper'>
-                            <div class='peg-text-display'>{id}</div>
+                            <div class='w-text-display peg-text-display'>{id}</div>
                         </div>
                     </div>
                     {/snippet}

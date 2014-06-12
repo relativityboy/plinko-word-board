@@ -15,8 +15,8 @@ Model = {};
     };
 
     //public function for testing
-    setTarget = function(x,y) {
-       target.set('now', {x: x, y: y});
+    setTarget = function(x, y) {
+        target.set('now', {x: x, y: y});
     };
 
     var complete = function() {
@@ -67,7 +67,7 @@ Model = {};
                 x: 0,
                 y: 0
             },
-            calculationMode:'normal'
+            calculationMode: 'normal'
         },
         initialize: function() {
             this.on('change:now', function() {
@@ -111,25 +111,25 @@ Model = {};
         calculateCameraPoint: function(screenPoint) {
             var attrs = this.attributes;
             var resp = {
-                x: ((screenPoint.x / this.attributes.multiplier.x ) + this.attributes.cameraoffset.x),
+                x: ((screenPoint.x / this.attributes.multiplier.x) + this.attributes.cameraoffset.x),
                 y: (
                         this.attributes.cameraoffset.y -
                         ((screenPoint.y - this.attributes.screenoffset.y) /
-                        this.attributes.multiplier.y))
+                                this.attributes.multiplier.y))
             };
             return resp;
         },
         tracking: function(active) {
-          if(typeof active == 'boolean') {
-                pause = (active)? false : true;
+            if (typeof active == 'boolean') {
+                pause = (active) ? false : true;
             }
-          return !pause;
+            return !pause;
         },
-        updateCameraPoint:function() {
+        updateCameraPoint: function() {
             this.attributes.camera = this.calculateCameraPoint(this.attributes.now);
             this.trigger('change:camera');
         },
-        updateScreenPoint:function() {
+        updateScreenPoint: function() {
             this.attributes.screen = this.calculateScreenPoint(this.attributes.now);
             this.trigger('change:screen');
         }
@@ -181,15 +181,16 @@ Model.Box = Backbone.Model.extend({
 (function() {
     var newId = 0;
     Model.Cel = Model.Box.extend({
-
         initialize: function() {
-            if(!this.id) {
+            if (!this.id) {
                 newId++;
-                this.set({id:newId});
+                this.set({id: newId});
             } else {
-                newId = parseInt(this.id) + 1;
+                if (!isNaN(parseInt)) {
+                    newId = parseInt(this.id) + 1;
+                }
             }
-            if(!this.attributes.hasOwnProperty('hotzone')) {
+            if (!this.attributes.hasOwnProperty('hotzone')) {
                 this.attributes.hotzone = {
                     screen: {
                         min: {
@@ -219,59 +220,59 @@ Model.Box = Backbone.Model.extend({
 
             this.on('change:screen change:camera', this.updateHZCoords, this);
         },
-        addEl:function($el) {
+        addEl: function($el) {
             this.attributes.$el = $el;
             this.attributes.$hz = $('.w-hotzone', $el[0]);
-            this.attributes.$txt = $('.peg-text-display', $el[0]);
+            this.attributes.$txt = $('.w-text-display', $el[0]);
             z = this;
         },
-        setText:function(txt) {
+        setText: function(txt) {
             this.attributes.$txt.text(txt);
         },
-        setTextId:function() {
-          this.attributes.$txt.text(this.id);
+        setTextId: function() {
+            this.attributes.$txt.text(this.id);
         },
-        detectScreenCollision:function(coords) {
+        detectScreenCollision: function(coords) {
             var celBox = this.attributes.hotzone.screen;
             return celBox.min.x < coords.x && celBox.min.y < coords.y && celBox.max.x > coords.x && celBox.max.y > coords.y;
 
         },
-        updateScreenCoords:function(coords) {
+        updateScreenCoords: function(coords) {
             var hzPos = this.attributes.$hz.position();
             this.attributes.screen = {
-                min:{
-                    x:coords.x,
-                    y:coords.y
+                min: {
+                    x: coords.x,
+                    y: coords.y
                 },
-                max:{
-                    x:coords.x + this.attributes.$el.width(),
-                    y:coords.y + this.attributes.$el.height()
+                max: {
+                    x: coords.x + this.attributes.$el.width(),
+                    y: coords.y + this.attributes.$el.height()
                 }
             };
 
             this.attributes.hotzone.screen = {
-                min:{
-                    x:coords.x + hzPos.left,
-                    y:coords.y + hzPos.top
+                min: {
+                    x: coords.x + hzPos.left,
+                    y: coords.y + hzPos.top
                 },
-                max:{
-                    x:coords.x + hzPos.left + this.attributes.$hz.width(),
-                    y:coords.y + hzPos.top + this.attributes.$hz.height()
+                max: {
+                    x: coords.x + hzPos.left + this.attributes.$hz.width(),
+                    y: coords.y + hzPos.top + this.attributes.$hz.height()
                 }
             };
 
         },
-        updateCameraCoordsByScreenCoords:function() {
+        updateCameraCoordsByScreenCoords: function() {
             this.attributes.camera.min = Model.Target().calculateCameraPoint(this.attributes.screen.min);
             this.attributes.camera.max = Model.Target().calculateCameraPoint(this.attributes.screen.max);
             this.attributes.hotzone.camera.min = Model.Target().calculateCameraPoint(this.attributes.hotzone.screen.min);
             this.attributes.hotzone.camera.max = Model.Target().calculateCameraPoint(this.attributes.hotzone.screen.max);
             this.trigger('change:camera');
         },
-        updateHZCoords:function() {
+        updateHZCoords: function() {
 
         },
-        toJSON:function() {
+        toJSON: function() {
             var o = {};
             o.id = this.attributes.id;
             o.camera = this.attributes.camera;
@@ -286,7 +287,8 @@ Model.Board = Model.Box.extend({
     initialize: function(e) {
         this.$el = e.$el;
         this.attributes.cels = new Collection.Cel();
-        //this.attributes.reset = new Collection.Cel();
+        this.attributes.resetCel = new Model.Cel({id:'reset'});
+        this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
         this.attributes.screen = {
             min: {
                 x: this.$el.offset().left,
@@ -299,7 +301,7 @@ Model.Board = Model.Box.extend({
         };
         this.attributes.enableCollisionDetection = false;
         this.on('change:enableCollisionDetection', function() {
-            if(this.attributes.enableCollisionDetection) {
+            if (this.attributes.enableCollisionDetection) {
                 this.attributes.target.on('change:screen', this.detectCollisions, this);
             } else {
                 this.attributes.target.off('change:screen', this.detectCollisions);
@@ -326,48 +328,56 @@ Model.Board = Model.Box.extend({
             },
         });
     },
-    calcServerCoords:function() {
-        for(var i = 0; i < this.attributes.cels.length; i++) {
+    calcServerCoords: function() {
+        this.attributes.resetCel.updateCameraCoordsByScreenCoords();
+        for (var i = 0; i < this.attributes.cels.length; i++) {
             console.log(this.attributes.cels.models)
-           this.attributes.cels.models[i].updateCameraCoordsByScreenCoords();
+            this.attributes.cels.models[i].updateCameraCoordsByScreenCoords();
         };
     },
-    detectCollisions:function() {
+    detectCollisions: function() {
         console.log(':::::::::::detectCollisions running:');
         var celBox,
-            cels = this.attributes.cels,
-            target = this.attributes.target.attributes.screen;
-        for(var i = 0; i < cels.length; i++) {
-            if(cels.models[i].detectScreenCollision(target)) {
+                cels = this.attributes.cels,
+                target = this.attributes.target.attributes.screen;
+
+        if (this.attributes.resetCel.detectScreenCollision(target)) {
+            console.log('reset detected');
+            return;
+        }
+        for (var i = 0; i < cels.length; i++) {
+            if (cels.models[i].detectScreenCollision(target)) {
                 cels.models[i].attributes.$el.addClass('active');
             } else {
                 cels.models[i].attributes.$el.removeClass('active');
             }
         }
     },
-    tracking:function(active) {
+    tracking: function(active) {
         return this.attributes.target.tracking(active);
     },
-    loadConfiguration:function(e) {
-      if(e.height) {
-         this.set('height', e.height);
-         this.set('width', e.width);
-      }
-      for(var i = 0; i < e.cels.length; i++) {
+    loadConfiguration: function(e) {
+        if (e.height) {
+            this.set('height', e.height);
+            this.set('width', e.width);
+        }
+        for (var i = 0; i < e.cels.length; i++) {
             this.attributes.cels.add(e.cels[i]);
         }
-        if(e.hasOwnProperty('resetCel')) {
+        /*if (e.hasOwnProperty('resetCel')) {
             this.attributes.resetCel = new Model.Cel(e.resetCel);
-        }  
+            this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
+        }*/
     },
-    showCelNumbers:function() {
+    showCelNumbers: function() {
         var cels = this.attributes.cels;
-        for(var i = 0; i < cels.length; i++) {
+        for (var i = 0; i < cels.length; i++) {
             cels.models[i].setTextId()
         }
     },
-    toJSON:function() {
+    toJSON: function() {
         var o = {};
+        o.resetCel = this.attributes.resetCel.toJSON();
         o.width = this.attributes.width;
         o.height = this.attributes.height;
         o.camera = this.attributes.camera;

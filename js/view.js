@@ -189,12 +189,31 @@ View.Board = Backbone.View.extend({
    },
    evtRepositionBanner:function() {
        var css = {
-           width:this.model.get('height'),
-           height:40,
-           left:this.model.get('width') - (this.$banner.width() * 0.5),
-           top:(this.model.get('height') * 0.5) - 20
+           height:this.model.get('height'),
+           width:40,
+           left:this.model.get('width') - 40
        }
+       var $display = $('.w-text-display', this.$banner[0]);
+       
        this.$banner.css(css);
+       
+       css = {
+           width:this.$banner.height(),
+           height:this.$banner.width()
+       }
+       $display.css(css);
+       
+       css = {
+           left:($display.height() * 0.5) - ($display.width() * 0.5),
+           top:($display.width() * 0.5) - ($display.height() * 0.5)
+       }       
+       $display.css(css);
+       
+       var coords = {
+           x:this.$banner.position().left,
+           y:this.$banner.position().top
+       }
+       this.model.attributes.resetCel.updateScreenCoords(coords);
    }
 });
 
