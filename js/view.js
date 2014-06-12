@@ -16,7 +16,8 @@ View.ControlPanel = Backbone.View.extend({
         'click .w-add-cel': 'evtAddCel',
         'click .w-save-cels': 'evtSaveCels',
         'click .w-load-cels': 'evtLoadCels',
-        'click .w-toggle-collision-detection':'evtToggleCollisionDetection'
+        'click .w-toggle-collision-detection':'evtToggleCollisionDetection',
+        'click .w-calculate-camera-coordinates':'evtCalcCelCameraCoords'
     },
     initialize: function(e) {
         this.$calibrationControls = $('.w-calibration-ctrl', this.el);
@@ -29,6 +30,9 @@ View.ControlPanel = Backbone.View.extend({
     },
     evtAddCel: function() {
         this.model.createCell();
+    },
+    evtCalcCelCameraCoords:function() {
+        this.model.calcServerCoords();
     },
     evtHide: function() {
         this.$el.hide();
@@ -73,6 +77,9 @@ View.ControlPanel = Backbone.View.extend({
           success:function(e) {
               for(var i = 0; i < e.cels.length; i++) {
                   z.model.attributes.cels.add(e.cels[i]);
+              }
+              if(e.hasOwnProperty('resetCel')) {
+                  z.model.attributes.resetCel = new Model.Cel(e.resetCel);
               }
               console.log(e, z.model.attributes);
           }

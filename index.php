@@ -72,10 +72,11 @@ for ($i = 0; $i < $pegs; $i++) {
                         </div>
                     </div>
                     <div>
-                        <h4 class='calibration'>Cels <input class='w-add-cel btn' type='button' value='add cel'></h4>
-                        <div><input class='w-save-cels' type='button' value='Save Cels'/>
-                            <input class='w-load-cels' type='button' value='Load Cels'/>
-                            <input class='w-toggle-collision-detection' type='button' value='Enable Colission Test'/></div>
+                        <h4 class='calibration'>Cels <input class='w-add-cel btn' type='button' value='Add Cel'><input class='w-save-cels btn' type='button' value='Save Cels'/>
+                            <input class='w-load-cels btn' type='button' value='Load Cels'/></h4>
+                        <div>
+                            <input class="w-calculate-camera-coordinates" type='button' value='Calc Server Coords'>
+                            <input class='w-toggle-collision-detection' type='button' value='Enable Coll Detection'/></div>
                     </div>
 		</div>
                 <script id='orange-snippets' type='text/html'>
