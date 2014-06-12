@@ -182,6 +182,22 @@ View.Cels = Backbone.View.extend({
     },
 });
 
+View.Board = Backbone.View.extend({
+   initialize:function(e) {
+       this.$banner = $('.word-banner', this.el);
+       this.model.on('change:width change:height', this.evtRepositionBanner,this)
+   },
+   evtRepositionBanner:function() {
+       var css = {
+           width:this.model.get('height'),
+           height:40,
+           left:this.model.get('width') - (this.$banner.width() * 0.5),
+           top:(this.model.get('height') * 0.5) - 20
+       }
+       this.$banner.css(css);
+   }
+});
+
 View.Page = Backbone.View.extend({
     events: {
         'click .w-mode-setup': 'evtModeSetup'
@@ -189,9 +205,11 @@ View.Page = Backbone.View.extend({
     initialize: function() {
         $board = this.model.$el;
         this.views = {};
+        //We have different views rooted in the same model because they serve different functions, much like a layer cake.
         this.views.controlPanel = new View.ControlPanel({el: $('.w-controlpanel')[0], model: this.model});
         this.views.calibrationPoints = new View.CalibrationPoints({el: $board[0], model: this.model});
         this.views.cels = new View.Cels({el: $board[0], model: this.model});
+        this.views.board = new View.Board({el: $board[0], model: this.model});
         this.model.on('change:mode', this.evtChangeMode, this);
         this.model.on('change:width change:height', this.evtBoardSize, this);
     },

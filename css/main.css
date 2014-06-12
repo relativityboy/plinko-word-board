@@ -113,17 +113,21 @@ div.setup-banner {
     font-weight: bold;
     color: #DDDDDD;
 }
-div.banner {
+div.word-banner {
 	position:absolute;
+        -webkit-transform: rotate(90deg);
         left:0px;
-        top:10px;
+        top:0px;
 	display:block;
-	width:100%;
-	padding:10px;
-	height:30px;
+	width:40px;	
+	min-height: 10px;
+        background:none;
+        border:none;
 }
-div.banner span {
-	display:none;
+div.word-banner span {
+	position:relative;
+        display:none;
+        padding:10px;
 }
 
 div.show-controlpanel {
@@ -203,4 +207,12 @@ body.setup div.setup-banner {
 
 body.setup div.controlpanel {
     display:block;
+}
+
+body.setup div.word-banner {
+    background:green;
+}
+
+body.setup div.word-banner span {
+    display:inline-block;
 }

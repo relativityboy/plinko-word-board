@@ -46,7 +46,7 @@ for ($i = 0; $i < $pegs; $i++) {
 	</head>
 	<body><div id='board' class="board">
                 <div id='setup-banner' class='w-setup-banner setup-banner'>SETUP</div>
-			<div id="banner" class="banner"></div>
+                <div id="word-banner" class="w-word-banner word-banner"><span>some text</span> some more text</div>
 			<table>
 	<?php
 	foreach ($tableStructure as $tr) {
@@ -79,7 +79,7 @@ for ($i = 0; $i < $pegs; $i++) {
                         <h4 class='subheader'>Calibration <!--span class='w-calibration-status calibration-status'>active</span><input class='w-toggle-calibration btn' type='button' value='enable calibration'--></h4>
                         <div class='w-corner-confirm-panel'>
                             <ul>
-                                <li><span class='inline-h4'><input class='w-tracking-ctrl' type='button' value='tracking'/>: </span>x:<span class='w-x'></span>, y:<span class='w-y'></span></li>
+                                <li><span class='inline-h4'><input class='w-tracking-ctrl' type='button' value='disable tracking'/></span> <span style='float:right'>x:<span class='w-x'></span>, y:<span class='w-y'></span></span></li>
                                 <li><span class='inline-h4'><input class='w-set-min w-calibration-ctrl' type='button' value='set top left'/></span></li>
                                 <li><span class='inline-h4'><input class='w-set-max w-calibration-ctrl' type='button' value='set bot right'/></span></li>
                             </ul>
