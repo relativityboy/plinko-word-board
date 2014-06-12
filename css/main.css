@@ -7,6 +7,7 @@ body {
     background:black;
     padding:0px;
     margin:0px;
+    font-family: Helvetica;
 }
 
 div.board {
@@ -41,7 +42,13 @@ div.board .calibration-point-circle {
 
 div.controlpanel {
     padding:5px;
-    position:absolute; left:0px; top:0px; width:300px; height:600px; border:1px solid blue;
+    position:absolute;
+    z-index:10000;
+    left:0px; 
+    top:0px; 
+    width:300px; 
+    height:600px; 
+    border:1px solid blue;
     background:#AAAAAA;
     font-family:Helvetica;
     display:none;
@@ -124,11 +131,16 @@ div.show-controlpanel {
 	position:absolute;
 	left:0px;
 	top:0px;
-	width:20px;
+	padding:5px;
 	height:20px;
 	opacity:0.1;
 	background:orange;
+        z-index:9000;
 
+}
+
+div.show-controlpanel:hover {
+    opacity:1;
 }
 
 .peg {

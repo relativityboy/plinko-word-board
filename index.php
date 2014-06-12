@@ -62,12 +62,12 @@ for ($i = 0; $i < $pegs; $i++) {
                         <div class='w-calibration-point-max calibration-point'></div>
                         <div class='w-calibration-point-target calibration-point calibration-point-circle' style="z-index:2000"></div>
 		</div>
-		<div class="w-mode-setup show-controlpanel"></div>
+		<div class="w-mode-setup show-controlpanel">enter setup</div>
 		<div class="w-controlpanel controlpanel">
                     <a href="#" class="w-hide-settings btn-hide-settings">run</a>
                     <div class="w-configuration">
                         <h4 class='subheader'>Board Config 
-                            <input class='w-save-cels btn' type='button' value='Save'/>
+                            <input class='w-save-config btn' type='button' value='Save'/>
                             <input class='w-load-config btn' type='button' value='Load'/>
                         </h4>
                         <ul>
@@ -79,7 +79,7 @@ for ($i = 0; $i < $pegs; $i++) {
                         <h4 class='subheader'>Calibration <!--span class='w-calibration-status calibration-status'>active</span><input class='w-toggle-calibration btn' type='button' value='enable calibration'--></h4>
                         <div class='w-corner-confirm-panel'>
                             <ul>
-                                <li><span class='inline-h4'><input class='w-set-min w-tracking-ctrl' type='button' value='tracking'/>: </span>x:<span class='w-x'></span>, y:<span class='w-y'></span></li>
+                                <li><span class='inline-h4'><input class='w-tracking-ctrl' type='button' value='tracking'/>: </span>x:<span class='w-x'></span>, y:<span class='w-y'></span></li>
                                 <li><span class='inline-h4'><input class='w-set-min w-calibration-ctrl' type='button' value='set top left'/></span></li>
                                 <li><span class='inline-h4'><input class='w-set-max w-calibration-ctrl' type='button' value='set bot right'/></span></li>
                             </ul>

@@ -12,30 +12,37 @@ View.ControlPanel = Backbone.View.extend({
         'change .w-board-width': 'evtBoardSize',
         'change .w-board-height': 'evtBoardSize',
         'click .w-hide-settings': 'evtHide',
-        'click .w-toggle-calibration': 'evtToggleCalibration',
+        //'click .w-toggle-calibration': 'evtToggleCalibration',
         'click .w-tracking-ctrl': 'evtToggleTracking',
         'click .w-set-min': 'evtSetMin',
         'click .w-set-max': 'evtSetMax',
         'click .w-add-cel': 'evtAddCel',
-        'click .w-save-cels': 'evtSaveCels',
+        'click .w-save-config': 'evtSaveConfiguration',
         'click .w-load-config': 'evtLoadConfiguration',
         'click .w-toggle-collision-detection':'evtToggleCollisionDetection',
         'click .w-calculate-camera-coordinates':'evtCalcCelCameraCoords'
     },
     initialize: function(e) {
+        this.$el.draggable();
         this.$calibrationControls = $('.w-calibration-ctrl', this.el);
-        this.$toggleCalibration = $('.w-toggle-calibration', this.el);
+        this.$toggleTracking = $('.w-tracking-ctrl', this.el);
         this.$calibrationStatus = $('.w-calibration-status', this.el);
         this.$targetX = $('.w-x', this.el);
         this.$targetY = $('.w-y', this.el);
+        this.$boardWidth = $('.w-board-width', this.el);
+        this.$boardHeight = $('.w-board-height', this.el);
         this.target = this.model.get('target');
         this.model.get('target').on('change:now', this.renderTargetDisplay, this);
+        this.model.on('change:width change:height', function() {
+            this.$boardWidth.val(this.model.get('width'));
+            this.$boardHeight.val(this.model.get('height'));
+        }, this);
     },
     evtAddCel: function() {
         this.model.createCell();
     },
     evtBoardSize: function() {
-        var val = {'width': $('.w-board-width').val(), 'height': $('.w-board-height').val()}
+        var val = {width: this.$boardWidth.val(), height: this.$boardHeight.val()}
         this.model.set(val);
         
     },
@@ -45,7 +52,7 @@ View.ControlPanel = Backbone.View.extend({
     evtHide: function() {
         this.model.set('mode', 'run');
     },
-    evtToggleCalibration: function() {
+    /*evtToggleCalibration: function() {
         if (!this.model.get('calibrating')) {
             this.model.set('calibrating', true);
             this.$toggleCalibration.val('disable calibration');
@@ -61,23 +68,17 @@ View.ControlPanel = Backbone.View.extend({
             this.$calibrationControls.attr('disabled', 'disabled');
             $('body').removeClass('setup');
         }
-    },
-    evtToggleTracking:function() {
-        if (!this.model.get('calibrating')) {
-            this.model.set('calibrating', true);
-            this.$toggleCalibration.val('disable calibration');
-            this.$calibrationStatus.css({opacity: 1});
-            this.$calibrationControls.removeAttr('disabled');
-            this.model.showCelNumbers();
-
-            $('body').addClass('setup');
+    },*/
+    evtToggleTracking:function(tracking) {
+        tracking = (typeof tracking == 'boolean')? tracking : this.model.tracking();
+        if(tracking) {
+            this.model.tracking(false);
+            this.$toggleTracking.val('enable tracking');
         } else {
-            this.model.set('calibrating', false);
-            this.$toggleCalibration.val('enable calibration');
-            this.$calibrationStatus.css({opacity: 0});
-            this.$calibrationControls.attr('disabled', 'disabled');
-            $('body').removeClass('setup');
+            this.model.tracking(true);
+            this.$toggleTracking.val('disable tracking');
         }
+        
     },
     evtToggleCollisionDetection: function() {
         var enableCollisionDetection = (this.model.get('enableCollisionDetection'))? false : true;
@@ -100,19 +101,13 @@ View.ControlPanel = Backbone.View.extend({
           url: appRoot+'configuration.json',
           type:'get',
           success:function(e) {
-              for(var i = 0; i < e.cels.length; i++) {
-                  z.model.attributes.cels.add(e.cels[i]);
-              }
-              if(e.hasOwnProperty('resetCel')) {
-                  z.model.attributes.resetCel = new Model.Cel(e.resetCel);
-              }
-              console.log(e, z.model.attributes);
+              z.model.loadConfiguration(e);
           }
       });
     },
-    evtSaveCels: function() {
+    evtSaveConfiguration: function() {
       $.ajax({
-          url:appRoot+'savecels.php',
+          url:appRoot+'saveconfiguration.php',
           type:'POST',
           data:{
               celJSON:this.model.toJSON()
@@ -138,7 +133,7 @@ View.CalibrationPoints = Backbone.View.extend({
         this.$target = $('.w-calibration-point-target', this.el);
         this.target = Model.Target();
         this.positionMax();
-        this.model.on('change:calibrating', this.evtToggleCalibrationPoints, this);
+        this.model.on('change:mode', this.evtToggleCalibrationPoints, this);
     },
     positionMax: function() {
         var width = this.$max.width();
@@ -149,7 +144,7 @@ View.CalibrationPoints = Backbone.View.extend({
         });
     },
     evtToggleCalibrationPoints: function() {
-        if (this.model.get('calibrating')) {
+        if (this.model.get('mode') === 'setup') {
             this.$min.animate({opacity: 0.5});
             this.$max.animate({opacity: 0.5});
             this.$target.show();
@@ -201,8 +196,6 @@ View.Page = Backbone.View.extend({
         this.model.on('change:width change:height', this.evtBoardSize, this);
     },
     evtBoardSize:function() {
-        console.log('fadf');
-        console.log(this)
         this.model.$el.css({width:this.model.get('width'), height:this.model.get('height')});
     },
     evtChangeMode:function() {

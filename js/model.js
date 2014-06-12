@@ -110,11 +110,8 @@ Model = {};
         },
         calculateCameraPoint: function(screenPoint) {
             var attrs = this.attributes;
-            console.log(screenPoint.y,
-                this.attributes.screenoffset)
             var resp = {
                 x: ((screenPoint.x / this.attributes.multiplier.x ) + this.attributes.cameraoffset.x),
-                //y: (this.screenMaxY - ((cameraPoint.y - this.cameraMinY) * this.attributes.multiplier.y)),
                 y: (
                         this.attributes.cameraoffset.y -
                         ((screenPoint.y - this.attributes.screenoffset.y) /
@@ -122,9 +119,11 @@ Model = {};
             };
             return resp;
         },
-        enableTracking: function(active) {
-          pause = (active)? true : false;
-          return pause;
+        tracking: function(active) {
+          if(typeof active == 'boolean') {
+                pause = (active)? false : true;
+            }
+          return !pause;
         },
         updateCameraPoint:function() {
             this.attributes.camera = this.calculateCameraPoint(this.attributes.now);
@@ -300,7 +299,6 @@ Model.Board = Model.Box.extend({
         };
         this.attributes.enableCollisionDetection = false;
         this.on('change:enableCollisionDetection', function() {
-            console.log('enableCollisionDetection:', this.attributes.enableCollisionDetection);
             if(this.attributes.enableCollisionDetection) {
                 this.attributes.target.on('change:screen', this.detectCollisions, this);
             } else {
@@ -336,8 +334,7 @@ Model.Board = Model.Box.extend({
     },
     detectCollisions:function() {
         console.log(':::::::::::detectCollisions running:');
-        var //$el,
-            celBox,
+        var celBox,
             cels = this.attributes.cels,
             target = this.attributes.target.attributes.screen;
         for(var i = 0; i < cels.length; i++) {
@@ -348,8 +345,20 @@ Model.Board = Model.Box.extend({
             }
         }
     },
-    enableTracking:function(active) {
-        return this.attributes.target.enableTracking(active);
+    tracking:function(active) {
+        return this.attributes.target.tracking(active);
+    },
+    loadConfiguration:function(e) {
+      if(e.height) {
+         this.set('height', e.height);
+         this.set('width', e.width);
+      }
+      for(var i = 0; i < e.cels.length; i++) {
+            this.attributes.cels.add(e.cels[i]);
+        }
+        if(e.hasOwnProperty('resetCel')) {
+            this.attributes.resetCel = new Model.Cel(e.resetCel);
+        }  
     },
     showCelNumbers:function() {
         var cels = this.attributes.cels;
@@ -359,6 +368,8 @@ Model.Board = Model.Box.extend({
     },
     toJSON:function() {
         var o = {};
+        o.width = this.attributes.width;
+        o.height = this.attributes.height;
         o.camera = this.attributes.camera;
         o.screen = this.attributes.screen;
         o.cels = this.attributes.cels.toJSON();
