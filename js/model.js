@@ -162,29 +162,36 @@ Model.Box = Backbone.Model.extend({
     var newId = 0;
     Model.Cel = Model.Box.extend({
         initialize: function() {
-            this.set({id: (newId++)});
-            this.attributes.hotzone = {
-                screen: {
-                    min: {
-                        x: 0,
-                        y: 0
+            if(!this.id) {
+                newId++;
+                this.set({id:newId});
+            } else {
+                newId = this.id + 1;
+            }
+            if(!this.attributes.hasOwnProperty('hotzone')) {
+                this.attributes.hotzone = {
+                    screen: {
+                        min: {
+                            x: 0,
+                            y: 0
+                        },
+                        max: {
+                            x: 0,
+                            y: 0
+                        }
                     },
-                    max: {
-                        x: 0,
-                        y: 0
+                    camera: {
+                        min: {
+                            x: 0,
+                            y: 0
+                        },
+                        max: {
+                            x: 0,
+                            y: 0
+                        }
                     }
-                },
-                camera: {
-                    min: {
-                        x: 0,
-                        y: 0
-                    },
-                    max: {
-                        x: 0,
-                        y: 0
-                    }
-                }
-            };
+                };
+            }
             this.attributes.$hz = false;
             this.attributes.$el = false;
             this.attributes.$text = false;
@@ -203,8 +210,14 @@ Model.Box = Backbone.Model.extend({
         setTextId:function() {
           this.attributes.$txt.text(this.id);
         },
+        detectScreenCollision:function(coords) {
+            var celBox = this.attributes.hotzone.screen;
+            return celBox.min.x < coords.x && celBox.min.y < coords.y && celBox.max.x > coords.x && celBox.max.y > coords.y;
+            
+        },
         updateScreenCoords:function(coords) {
-            this.set('screen', { 
+            var hzPos = this.attributes.$hz.position();
+            this.attributes.screen = { 
                 min:{
                     x:coords.x,
                     y:coords.y
@@ -213,7 +226,19 @@ Model.Box = Backbone.Model.extend({
                     x:coords.x + this.attributes.$el.width(),
                     y:coords.y + this.attributes.$el.height()
                 }
-            });
+            };
+            
+            this.attributes.hotzone.screen = { 
+                min:{
+                    x:coords.x + hzPos.left,
+                    y:coords.y + hzPos.top
+                },
+                max:{
+                    x:coords.x + hzPos.left + this.attributes.$hz.width(),
+                    y:coords.y + hzPos.top + this.attributes.$hz.height()
+                }
+            };
+            
         },
         updateHZCoords:function() {
             
@@ -223,7 +248,7 @@ Model.Box = Backbone.Model.extend({
             o.id = this.attributes.id;
             o.camera = this.attributes.camera;
             o.screen = this.attributes.screen;
-            o.camera = this.attributes.camera;
+            o.hotzone = this.attributes.hotzone;
             return o;
         }
     });
@@ -245,6 +270,7 @@ Model.Board = Model.Box.extend({
         };
         this.attributes.enableCollisionDetection = false;
         this.on('change:enableCollisionDetection', function() {
+            console.log('enableCollisionDetection:', this.attributes.enableCollisionDetection);
             if(this.attributes.enableCollisionDetection) {
                 this.attributes.target.on('change:screen', this.detectCollisions, this);
             } else {
@@ -273,16 +299,25 @@ Model.Board = Model.Box.extend({
         });
     },
     detectCollisions:function() {
-        var celBox, 
+        console.log(':::::::::::detectCollisions running:');
+        var //$el,
+            celBox, 
             cels = this.attributes.cels,
             target = this.attributes.target.attributes.screen;
         for(var i = 0; i < cels.length; i++) {
-            celBox = cels.models[i].attributes.screen;
-            if(celBox.min.x < target.x && celBox.min.y < target.y && celBox.max.x > target.x && celBox.max.y > target.y) {
+            if(cels.models[i].detectScreenCollision(target)) {
                 cels.models[i].attributes.$el.addClass('active');
             } else {
                 cels.models[i].attributes.$el.removeClass('active');
             }
+            /*celBox = cels.models[i].attributes.screen;
+            $el = cels.models[i].attributes.$el;
+            //here we need to use the hotzones!
+            if(celBox.min.x < target.x && celBox.min.y < target.y && celBox.max.x > target.x && celBox.max.y > target.y) {
+                cels.models[i].attributes.$el.addClass('active');
+            } else {
+                cels.models[i].attributes.$el.removeClass('active');
+            }*/
         }
     },
     showCelNumbers:function() {

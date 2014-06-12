@@ -89,7 +89,16 @@ $(document).ready(function() {
     });
     $banner = $('#banner');
     //fetchShowlist();
-
+    
+    function test(id) {
+        var tests = {
+            "1": function() {
+                console.log('Setting up calibration::: setTarget(200,400); board.calculateOffset(); setTarget(400, 0); board.calculateMultiplier(); setTarget(200, 200);')
+                setTarget(200,400); board.calculateOffset(); setTarget(400, 0); board.calculateMultiplier(); setTarget(200, 200);
+            }
+        }
+        tests[id]();
+    }
 });
 
 

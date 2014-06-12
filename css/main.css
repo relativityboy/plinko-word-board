@@ -132,7 +132,7 @@ div.show-controlpanel {
     height:30px;
     left:50px;
     top:50px;
-    width:100px;
+    width:110px;
     height:100px;
     opacity:0;
 }
@@ -160,6 +160,6 @@ body.calibrating .peg-hotzone {
     opacity:1;
 }
 
-body.calibrating .peg-hotzone.active {
+body.calibrating .peg.active .peg-hotzone {
     background: white;
 }

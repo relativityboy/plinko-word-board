@@ -56,7 +56,7 @@ for ($i = 0; $i < $pegs; $i++) {
 			</table>
                         <div class='w-calibration-point-min calibration-point'></div>
                         <div class='w-calibration-point-max calibration-point'></div>
-                        <div class='w-calibration-point-target calibration-point calibration-point-circle'></div>
+                        <div class='w-calibration-point-target calibration-point calibration-point-circle' style="z-index:2000"></div>
 		</div>
 		<div class="w-show-controlpanel show-controlpanel"></div>
 		<div class="w-controlpanel controlpanel">
