@@ -403,7 +403,7 @@ Model.Board = Model.Box.extend({
             return;
         }
         this.detectlock = true;
-        console.log(':::::::::::detectCollisions running:');
+        console.log(':::::::::::detectCollisions running:' + this.attributes.mode);
         var     cels = this.attributes.cels,
                 target = this.attributes.target.attributes.screen;
         if (this.attributes.mode == 'setup') {
@@ -421,7 +421,6 @@ Model.Board = Model.Box.extend({
                 }
             }
         } else if (this.attributes.mode == 'test') {
-            console.log('mode test')
             if (this.attributes.resetCel.detectScreenCollision(target)) {
                 this.attributes.detectCollisionCels = cels.clone();
                 this.resetWords();
@@ -437,10 +436,12 @@ Model.Board = Model.Box.extend({
             }
         } else {
             if (this.attributes.resetCel.detectScreenCollision(target)) {
+                this.attributes.detectCollisionCels = cels.clone();
                 this.resetWords();
                 this.detectlock = false;
                 return;
             }
+            cels = this.attributes.detectCollisionCels;
             for (var i = 0; i < cels.length; i++) {
                 if (cels.models[i].detectScreenCollision(target)) {
                     cels.models[i].setText(this.attributes.wordbanks.getText(cels.models[i].id));
@@ -456,7 +457,6 @@ Model.Board = Model.Box.extend({
             this.set('enableCollisionDetection', true);
             this.attributes.detectCollisionCels = this.attributes.cels.clone();
             this.resetWords();
-            
         } else {
             for (var i = 0; i < cels.length; i++) {
                 cels.models[i].setText(cels.models[i].id);
