@@ -33,6 +33,9 @@ View.ControlPanel = Backbone.View.extend({
         this.$boardHeight = $('.w-board-height', this.el);
         this.target = this.model.get('target');
         
+        this.views = {};
+        this.views.test = new View.Testing({el:$('.w-testing', this.el), model:this.model});
+        
         this.model.get('target').on('change:now', this.renderTargetDisplay, this);
         this.model.on('change:width change:height', function() {
             this.$boardWidth.val(this.model.get('width'));
@@ -141,15 +144,47 @@ View.ControlPanel = Backbone.View.extend({
     }
 });
 
+View.Testing = Backbone.View.extend({
+   events: {
+       'click .w-test-calibration':'evtRunCalibrationProfile',
+       'change .w-test-cam-y':'evtSetCamCoords',
+       'change .w-test-cam-x':'evtSetCamCoords'
+   }, 
+   initialize:function(e) {
+       this.$camY = $('.w-test-cam-y', this.el);
+       this.$camX = $('.w-test-cam-x', this.el);
+       this.calibrations = {
+           '1':function() {
+               setTarget(200,400); board.calculateOffset(); setTarget(400, 0); board.calculateMultiplier(); setTarget(200, 200)
+           },
+           '2':function() {
+               setTarget(0,400); board.calculateOffset(); setTarget(400, 0); board.calculateMultiplier(); setTarget(200, 200)
+           }
+       }
+   },
+   evtRunCalibrationProfile:function(e) {
+       var id = $(e.currentTarget).data('value');
+        console.log('running test calibration profile ', id);
+        console.log(this.calibrations[id])
+        this.calibrations[id]();
+        console.log('done');
+   },
+   evtSetCamCoords:function() {
+       setTarget(this.$camX.val(), this.$camY.val());
+   }
+});
+
 View.CalibrationPoints = Backbone.View.extend({
     initialize: function() {
         this.$min = $('.w-calibration-point-min', this.el);
         this.$max = $('.w-calibration-point-max', this.el);
-        this.$target = $('.w-calibration-point-target', this.el);
+        this.$targetSprite = $('.w-calibration-point-target', this.el);
+        
         this.target = Model.Target();
         this.positionMax();
         this.model.on('change:mode', this.evtToggleCalibrationPoints, this);
-		  this.model.on('change:width change:height', this.positionMax, this)
+        this.model.on('change:width change:height', this.positionMax, this);
+        
     },
     positionMax: function() {
         var width = this.$max.width();
@@ -167,19 +202,22 @@ View.CalibrationPoints = Backbone.View.extend({
         if (this.model.get('mode') === 'setup') {
             this.$min.animate({opacity: 0.5});
             this.$max.animate({opacity: 0.5});
-            this.$target.show();
+            this.$targetSprite.show();
+            this.targetSpriteOffsetX = this.$targetSprite.width() * 0.5;
+            this.targetSpriteOffsetY = this.$targetSprite.height() * 0.5;
             this.target.on('change:screen', this.renderTargetPointer, this);
         } else {
             this.$min.animate({opacity: 0.0});
             this.$max.animate({opacity: 0.0});
-            this.$target.hide();
+            this.$targetSprite.hide();
             this.target.off('change:screen', this.renderTargetPointer, this);
         }
     },
     renderTargetPointer: function() {
-        this.$target.css({left: this.target.attributes.screen.x, top: this.target.attributes.screen.y});
+        this.$targetSprite.css({left: this.target.attributes.screen.x - this.targetSpriteOffsetX, top: this.target.attributes.screen.y - this.targetSpriteOffsetY});
     }
 });
+
 
 View.Cels = Backbone.View.extend({
     initialize: function() {

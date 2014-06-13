@@ -1,4 +1,30 @@
 Model = {};
+
+Model.Wordbanks = Backbone.Model.extend({
+    defaults: {
+        banks: {}
+    },
+    initialize: function() {
+
+
+        clearTimeout(fetchPointTimeout);
+        if (!lock && !pause) {
+
+            lock = true;
+        }
+        fetchPointTimeout = setTimeout(fetchPoint, 200);
+    },
+    loadWordbanks: function() {
+        var z = this;
+        $.ajax({
+            url: appRoot + 'wordbanks.json',
+            success: function(e) {
+                var banks = $.extend({}, z.attributes.banks, e);
+                z.set('banks', banks);
+            }
+        });
+    }
+});
 (function() {
     var xy = null;
     var fetchPointTimeout = null,
@@ -90,16 +116,19 @@ Model = {};
             this.cameraMinY = 0;
         },
         calculateOffset: function(point) {
+            console.log('calculateOffset screen, camera', point, this.attributes.now);
             this.attributes.screenoffset = point;
             this.attributes.cameraoffset = this.attributes.now;
         },
         calculateMultiplier: function(screenMax) {
+            console.log('calculateMultiplier screenMax, camera', screenMax, this.attributes.now);
             this.screenMaxY = screenMax.y;
             this.cameraMinY = this.attributes.now.y;
             this.attributes.multiplier = {
                 x: ((screenMax.x - this.attributes.screenoffset.x) / (this.attributes.now.x - this.attributes.cameraoffset.x)),
                 y: ((screenMax.y - this.attributes.screenoffset.y) / (this.attributes.cameraoffset.y - this.attributes.now.y))
             };
+            console.log('calculateMultiplier multipier', this.attributes.multiplier);
         },
         calculateScreenPoint: function(cameraPoint) {
             return {
@@ -293,13 +322,24 @@ Model.Board = Model.Box.extend({
         this.attributes.resetCel = new Model.Cel({id: 'reset'});
         this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
         this.attributes.screen = {
-            min: {
+            /*
+             * we were originally going for using the full browser window as our coordinate system.
+             * we bailed on that.
+             * min: {
                 x: this.$el.offset().left,
                 y: this.$el.offset().top
             },
-            max: {
+             max: {
                 x: this.$el.offset().left + this.$el.width(),
                 y: this.$el.offset().top + this.$el.height()
+            }*/
+            min: {
+                x: 0,
+                y: 0
+            },
+            max: {
+                x: this.$el.width(),
+                y: this.$el.height()
             }
         };
         this.attributes.enableCollisionDetection = false;
@@ -314,11 +354,13 @@ Model.Board = Model.Box.extend({
 
     },
     calculateOffset: function() {
+        console.log('Board.calculateOffset -> screen.min:', this.attributes.screen.min)
         this.attributes.target.calculateOffset(this.attributes.screen.min);
         this.calculateMultiplier();
     },
     calculateMultiplier: function() {
-        this.attributes.target.calculateMultiplier(this.attributes.screen.max);
+        //this.attributes.target.calculateMultiplier(this.attributes.screen.max);
+        this.attributes.target.calculateMultiplier({x:this.attributes.width, y:this.attributes.height});
     },
     createCell: function() {
         this.attributes.cels.add({
@@ -412,5 +454,28 @@ Model.Board = Model.Box.extend({
         o.screen = this.attributes.screen;
         o.cels = this.attributes.cels.toJSON();
         return o;
+    },
+    updateScreenMaxMin:function() {
+        this.attributes.screen = {
+            /*
+             * we were originally going for using the full browser window as our coordinate system.
+             * we bailed on that.
+             * min: {
+                x: this.$el.offset().left,
+                y: this.$el.offset().top
+            },
+             max: {
+                x: this.$el.offset().left + this.$el.width(),
+                y: this.$el.offset().top + this.$el.height()
+            }*/
+            min: {
+                x: 0,
+                y: 0
+            },
+            max: {
+                x: this.$el.width(),
+                y: this.$el.height()
+            }
+        };
     }
 });
