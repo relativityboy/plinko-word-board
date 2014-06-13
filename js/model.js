@@ -2,7 +2,9 @@ Model = {};
 
 Model.Wordbanks = Backbone.Model.extend({
     defaults: {
-        banks: {}
+        banks: {},
+        currentBankName:'_none_',
+        currentBank:false
     },
     initialize: function() {
 
@@ -16,6 +18,7 @@ Model.Wordbanks = Backbone.Model.extend({
             success: function(e) {
                 var banks = $.extend({}, z.attributes.banks, e);
                 z.set('banks', banks);
+                z.setCurrentBank('main');
             },
             dataFilter:function(e) {
                 return JSON.parse(e);
@@ -24,6 +27,25 @@ Model.Wordbanks = Backbone.Model.extend({
                 console.log('error loading wordbanks', arguments);
             }
         });
+    },
+    getText:function(pegId) {
+        if(!this.attributes.currentBank) return 'no bank ' + this.get('currentBankName')
+        try {
+            return this.attributes.currentBank['peg' + pegId][
+                Math.round((Math.random() * (this.attributes.currentBank['peg' + pegId].length - 1) ))
+            ];
+        } catch(e) {
+            console.log("exception when getting text for peg " + pegId, e );
+            return "exception: peg " + pegId + " bank " + this.get('currentBankName');
+        }
+    },
+    setCurrentBank:function(bankName) {
+        if(!this.attributes.banks.hasOwnProperty(bankName)) {
+            console.log('cannot set wordbank ' + bankName);
+            return false;
+        }
+        this.set({currentBank:this.attributes.banks[bankName], currentBankName:bankName}, {silent:true});
+        this.trigger('change:currentBank change:bankName');
     }
 });
 (function() {
@@ -210,12 +232,12 @@ Model.Box = Backbone.Model.extend({
 });
 
 (function() {
-    var newId = 0;
+    var newId = 1;
     Model.Cel = Model.Box.extend({
         initialize: function() {
             if (!this.id) {
-                newId++;
                 this.set({id: newId});
+                newId++;
             } else {
                 if (!isNaN(parseInt(newId))) {
                     newId = parseInt(this.id) + 1;
@@ -255,7 +277,7 @@ Model.Box = Backbone.Model.extend({
             this.attributes.$el = $el;
             this.attributes.$hz = $('.w-hotzone', $el[0]);
             this.attributes.$txt = $('.w-text-display', $el[0]);
-            z = this;
+            this.updateScreenCoords({x:parseInt(this.attributes.screen.min.x), y:parseInt(this.attributes.screen.min.y)});
         },
         setText: function(txt) {
             this.attributes.$txt.text(txt);
@@ -394,7 +416,6 @@ Model.Board = Model.Box.extend({
             console.log('detectCollisions resetCel', this.attributes.resetCel);
             if (this.attributes.resetCel.detectScreenCollision(target)) {
                 this.attributes.resetCel.attributes.$el.addClass('active');
-                console.log(this.attributes.resetCel.attributes.$el[0]);
                 return;
             }
             this.attributes.resetCel.attributes.$el.removeClass('active');
@@ -403,6 +424,18 @@ Model.Board = Model.Box.extend({
                     cels.models[i].attributes.$el.addClass('active');
                 } else {
                     cels.models[i].attributes.$el.removeClass('active');
+                }
+            }
+        } else if (this.attributes.mode == 'test') {
+            console.log('mode test')
+            if (this.attributes.resetCel.detectScreenCollision(target)) {
+                this.resetWords();
+                return;
+            }
+            for (var i = 0; i < cels.length; i++) {
+                if (cels.models[i].detectScreenCollision(target)) {
+                    
+                    cels.models[i].setText(this.attributes.wordbanks.getText(cels.models[i].id));
                 }
             }
         } else {
