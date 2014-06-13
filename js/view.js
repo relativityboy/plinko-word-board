@@ -32,11 +32,14 @@ View.ControlPanel = Backbone.View.extend({
         this.$boardWidth = $('.w-board-width', this.el);
         this.$boardHeight = $('.w-board-height', this.el);
         this.target = this.model.get('target');
+        
         this.model.get('target').on('change:now', this.renderTargetDisplay, this);
         this.model.on('change:width change:height', function() {
             this.$boardWidth.val(this.model.get('width'));
             this.$boardHeight.val(this.model.get('height'));
         }, this);
+        this.model.on('change:enableCollisionDetection', this.renderCollisionDetectionButton, this);
+        this.model.get('target').on('change:tracking', this.evtRenderToggleTrackingButton, this);
     },
     evtAddCel: function() {
         this.model.createCell();
@@ -70,15 +73,20 @@ View.ControlPanel = Backbone.View.extend({
         }
     },*/
     evtToggleTracking:function(tracking) {
-        tracking = (typeof tracking == 'boolean')? tracking : this.model.tracking();
+        var tracking = (typeof tracking == 'boolean')? tracking : this.model.tracking();
         if(tracking) {
             this.model.tracking(false);
-            this.$toggleTracking.val('enable tracking');
         } else {
             this.model.tracking(true);
-            this.$toggleTracking.val('disable tracking');
         }
-
+    },
+    evtRenderToggleTrackingButton:function() {
+        var tracking = this.model.tracking();
+        if(tracking) {
+            this.$toggleTracking.val('disable tracking');
+        } else {
+            this.$toggleTracking.val('enable tracking');
+        }
     },
     evtToggleCollisionDetection: function() {
         var enableCollisionDetection = (this.model.get('enableCollisionDetection'))? false : true;
@@ -119,6 +127,13 @@ View.ControlPanel = Backbone.View.extend({
     },
     show: function() {
         this.$el.show();
+    },
+    renderCollisionDetectionButton:function() {
+        if(this.model.get('enableCollisionDetection')) {
+            $('.w-toggle-collision-detection').val('Disable Coll Detection');
+        } else {
+            $('.w-toggle-collision-detection').val('Enable Coll Detection');
+        }
     },
     renderTargetDisplay: function() {
         this.$targetX.html(this.target.attributes.now.x);

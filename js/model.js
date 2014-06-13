@@ -123,6 +123,7 @@ Model = {};
             if (typeof active == 'boolean') {
                 pause = (active) ? false : true;
             }
+            this.set('tracking', !pause);
             return !pause;
         },
         updateCameraPoint: function() {
@@ -286,10 +287,10 @@ Model.Box = Backbone.Model.extend({
 Model.Board = Model.Box.extend({
     initialize: function(e) {
         this.$el = e.$el;
-		  this.attributes.width = e.$el.width();
-		  this.attributes.height = e.$el.height();
+        this.attributes.width = e.$el.width();
+        this.attributes.height = e.$el.height();
         this.attributes.cels = new Collection.Cel();
-        this.attributes.resetCel = new Model.Cel({id:'reset'});
+        this.attributes.resetCel = new Model.Cel({id: 'reset'});
         this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
         this.attributes.screen = {
             min: {
@@ -309,6 +310,7 @@ Model.Board = Model.Box.extend({
                 this.attributes.target.off('change:screen', this.detectCollisions);
             }
         }, this);
+        this.on('change:mode', this.evtModeChange, this);
 
     },
     calculateOffset: function() {
@@ -335,14 +337,15 @@ Model.Board = Model.Box.extend({
         for (var i = 0; i < this.attributes.cels.length; i++) {
             console.log(this.attributes.cels.models)
             this.attributes.cels.models[i].updateCameraCoordsByScreenCoords();
-        };
+        }
+        ;
     },
     detectCollisions: function() {
         console.log(':::::::::::detectCollisions running:');
         var celBox,
-            cels = this.attributes.cels,
-            target = this.attributes.target.attributes.screen;
-        if(this.attributes.mode == 'setup') {
+                cels = this.attributes.cels,
+                target = this.attributes.target.attributes.screen;
+        if (this.attributes.mode == 'setup') {
             if (this.attributes.resetCel.detectScreenCollision(target)) {
                 console.log('reset detected');
                 return;
@@ -366,6 +369,12 @@ Model.Board = Model.Box.extend({
             }
         }
     },
+    evtModeChange: function() {
+        if (this.get('mode') == 'run') {
+            this.set('enableCollisionDetection', enableCollisionDetection);
+        }
+
+    },
     loadConfiguration: function(e) {
         if (e.height) {
             this.set('height', e.height);
@@ -375,11 +384,11 @@ Model.Board = Model.Box.extend({
             this.attributes.cels.add(e.cels[i]);
         }
         /*if (e.hasOwnProperty('resetCel')) {
-            this.attributes.resetCel = new Model.Cel(e.resetCel);
-            this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
-        }*/
+         this.attributes.resetCel = new Model.Cel(e.resetCel);
+         this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
+         }*/
     },
-    resetWords:function() {
+    resetWords: function() {
         for (var i = 0; i < cels.length; i++) {
             cels.models[i].setText('');
         }
@@ -394,8 +403,6 @@ Model.Board = Model.Box.extend({
     tracking: function(active) {
         return this.attributes.target.tracking(active);
     },
-
-
     toJSON: function() {
         var o = {};
         o.resetCel = this.attributes.resetCel.toJSON();
