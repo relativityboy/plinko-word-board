@@ -44,7 +44,7 @@ for ($i = 0; $i < $pegs; $i++) {
         <script type='text/javascript' src="js/main.js"></script>
     </head>
     <body>
-        <div id='board' class="board">
+        <div id='board' class="board" tabindex="0">
             <div id='setup-banner' class='w-setup-banner setup-banner'>SETUP</div>
             <div id="word-banner" class="w-word-banner word-banner">
                 <div class='w-hotzone reset-hotzone'></div>
@@ -95,6 +95,11 @@ for ($i = 0; $i < $pegs; $i++) {
                     <li><span class='inline-h4'>Cam Y</span><input class="w-test-cam-y" type='number' value='0'/></li>
                     <li><label class='inline-h4'>Cam X</label><input class="w-test-cam-x" type='number' value='0'/></li>
                 </ul>
+            </div>
+            <div class="w-configuration">
+                <h4 class='subheader'>Wordbank
+                    <input class='w-load-wordbanks btn' type='button' value='Load'/>
+                </h4>
             </div>
         </div>
         <script id='orange-snippets' type='text/html'>

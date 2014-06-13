@@ -6,21 +6,22 @@ Model.Wordbanks = Backbone.Model.extend({
     },
     initialize: function() {
 
-
-        clearTimeout(fetchPointTimeout);
-        if (!lock && !pause) {
-
-            lock = true;
-        }
-        fetchPointTimeout = setTimeout(fetchPoint, 200);
     },
     loadWordbanks: function() {
         var z = this;
+        console.log('load wordbanks')
         $.ajax({
             url: appRoot + 'wordbanks.json',
+            dataType:'text',
             success: function(e) {
                 var banks = $.extend({}, z.attributes.banks, e);
                 z.set('banks', banks);
+            },
+            dataFilter:function(e) {
+                return JSON.parse(e);
+            },
+            error:function(e) {
+                console.log('error loading wordbanks', arguments);
             }
         });
     }
@@ -216,7 +217,7 @@ Model.Box = Backbone.Model.extend({
                 newId++;
                 this.set({id: newId});
             } else {
-                if (!isNaN(parseInt)) {
+                if (!isNaN(parseInt(newId))) {
                     newId = parseInt(this.id) + 1;
                 }
             }
@@ -321,6 +322,8 @@ Model.Board = Model.Box.extend({
         this.attributes.cels = new Collection.Cel();
         this.attributes.resetCel = new Model.Cel({id: 'reset'});
         this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
+        this.attributes.wordbanks = new Model.Wordbanks();
+        
         this.attributes.screen = {
             /*
              * we were originally going for using the full browser window as our coordinate system.
@@ -388,10 +391,13 @@ Model.Board = Model.Box.extend({
                 cels = this.attributes.cels,
                 target = this.attributes.target.attributes.screen;
         if (this.attributes.mode == 'setup') {
+            console.log('detectCollisions resetCel', this.attributes.resetCel);
             if (this.attributes.resetCel.detectScreenCollision(target)) {
-                console.log('reset detected');
+                this.attributes.resetCel.attributes.$el.addClass('active');
+                console.log(this.attributes.resetCel.attributes.$el[0]);
                 return;
             }
+            this.attributes.resetCel.attributes.$el.removeClass('active');
             for (var i = 0; i < cels.length; i++) {
                 if (cels.models[i].detectScreenCollision(target)) {
                     cels.models[i].attributes.$el.addClass('active');
@@ -406,14 +412,14 @@ Model.Board = Model.Box.extend({
             }
             for (var i = 0; i < cels.length; i++) {
                 if (cels.models[i].detectScreenCollision(target)) {
-                    cels.models[i].setText('a pretty word');
+                    cels.models[i].setText(this.attributes.wordbanks.attributes.banks.main['peg' + cels.models[i].id][0]);
                 }
             }
         }
     },
     evtModeChange: function() {
         if (this.get('mode') == 'run') {
-            this.set('enableCollisionDetection', enableCollisionDetection);
+            this.set('enableCollisionDetection', true);
         }
 
     },
@@ -431,6 +437,7 @@ Model.Board = Model.Box.extend({
          }*/
     },
     resetWords: function() {
+        var cels = this.attributes.cels;
         for (var i = 0; i < cels.length; i++) {
             cels.models[i].setText('');
         }

@@ -20,7 +20,8 @@ View.ControlPanel = Backbone.View.extend({
         'click .w-save-config': 'evtSaveConfiguration',
         'click .w-load-config': 'evtLoadConfiguration',
         'click .w-toggle-collision-detection':'evtToggleCollisionDetection',
-        'click .w-calculate-camera-coordinates':'evtCalcCelCameraCoords'
+        'click .w-calculate-camera-coordinates':'evtCalcCelCameraCoords',
+        'click .w-load-wordbanks':'evtLoadWordbanks'
     },
     initialize: function(e) {
         this.$el.draggable();
@@ -42,7 +43,8 @@ View.ControlPanel = Backbone.View.extend({
             this.$boardHeight.val(this.model.get('height'));
         }, this);
         this.model.on('change:enableCollisionDetection', this.renderCollisionDetectionButton, this);
-        this.model.get('target').on('change:tracking', this.evtRenderToggleTrackingButton, this);
+        this.target.on('change:tracking', this.evtRenderToggleTrackingButton, this);
+        
     },
     evtAddCel: function() {
         this.model.createCell();
@@ -75,6 +77,9 @@ View.ControlPanel = Backbone.View.extend({
             $('body').removeClass('setup');
         }
     },*/
+    evtLoadWordbanks:function() {
+        this.model.attributes.wordbanks.loadWordbanks();
+    },
     evtToggleTracking:function(tracking) {
         var tracking = (typeof tracking == 'boolean')? tracking : this.model.tracking();
         if(tracking) {
@@ -209,8 +214,8 @@ View.CalibrationPoints = Backbone.View.extend({
         } else {
             this.$min.animate({opacity: 0.0});
             this.$max.animate({opacity: 0.0});
-            this.$targetSprite.hide();
-            this.target.off('change:screen', this.renderTargetPointer, this);
+            //this.$targetSprite.hide();
+            //this.target.off('change:screen', this.renderTargetPointer, this);
         }
     },
     renderTargetPointer: function() {
@@ -242,8 +247,31 @@ View.Cels = Backbone.View.extend({
 
 View.Board = Backbone.View.extend({
    initialize:function(e) {
+       var z = this;
+       var now;
        this.$banner = $('.word-banner', this.el);
-       this.model.on('change:width change:height', this.evtRepositionBanner,this)
+       this.model.on('change:width change:height', this.evtRepositionBanner,this);
+       this.target = this.model.get('target');
+       this.$el.on('keypress', function(ev) {
+           switch(ev.which) {
+               case 119 :
+                   z.target.attributes.now.y = z.target.attributes.now.y + 1;
+                   z.target.trigger('change:now');
+                   break;
+               case 115 :
+                   z.target.attributes.now.y = z.target.attributes.now.y - 1;
+                   z.target.trigger('change:now');
+                   break;
+               case 100 :
+                   z.target.attributes.now.x = z.target.attributes.now.x + 1;
+                   z.target.trigger('change:now');
+                   break;
+               case 97 :
+                   z.target.attributes.now.x = z.target.attributes.now.x - 1;
+                   z.target.trigger('change:now');
+                   break;
+           }
+       });
    },
    evtRepositionBanner:function() {
        var css = {
