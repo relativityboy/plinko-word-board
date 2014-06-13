@@ -233,20 +233,34 @@ View.Cels = Backbone.View.extend({
         this.cels = this.model.get('cels');
         this.cels.on('add', this.evtAddCel, this);
     },
-    evtAddCel: function() {
-        var cel = this.cels.last()
-            z = this;
+    evtAddCel: function(cel) {
+        var z = this;
         this.$el.snippetAppend('peg', cel);
         cel.addEl($('#cel__' + cel.id));
         cel.attributes.$el.draggable();
         cel.attributes.$el.on( "dragstop",
-        function( e, ui ) {
-            cel.updateScreenCoords({
-                x:ui.position.left,
-                y:ui.position.top
+            function( e, ui ) {
+                cel.updateScreenCoords({
+                    x:ui.position.left,
+                    y:ui.position.top
+                });
+                z.cels.sort();
             });
-        } );
+        cel.on('change:text', this.renderCelText, this);
     },
+    renderCelText:function(cel, i) {
+        console.log(cel.attributes.$txt.text());
+        if(cel.attributes.text != '') {
+           cel.attributes.$txt.fadeIn(500); 
+        } else {
+           cel.attributes.$txt.hide();  
+        }
+        if(this.model.attributes.mode == 'run' || this.model.attributes.mode =='test') {
+            console.log(this.model.attributes.resetCel.attributes.$txt.append('<span>' + cel.attributes.text + '</span>'));
+            $('span', this.model.attributes.resetCel.attributes.$txt[0]).animate({opacity:1});
+        }
+        
+    }
 });
 
 View.Board = Backbone.View.extend({
@@ -254,6 +268,7 @@ View.Board = Backbone.View.extend({
        var z = this;
        var now;
        this.$banner = $('.word-banner', this.el);
+       this.$display = $('.w-text-display', this.$banner[0]);
        this.model.on('change:width change:height', this.evtRepositionBanner,this);
        this.target = this.model.get('target');
        this.$el.on('keypress', function(ev) {
@@ -283,21 +298,20 @@ View.Board = Backbone.View.extend({
            width:40,
            left:this.model.get('width') - 40
        }
-       var $display = $('.w-text-display', this.$banner[0]);
-
+       
        this.$banner.css(css);
 
        css = {
            width:this.$banner.height(),
            height:this.$banner.width()
        }
-       $display.css(css);
+       this.$display.css(css);
 
        css = {
-           left:($display.height() * 0.5) - ($display.width() * 0.5),
-           top:($display.width() * 0.5) - ($display.height() * 0.5)
+           left:(this.$display.height() * 0.5) - (this.$display.width() * 0.5),
+           top:(this.$display.width() * 0.5) - (this.$display.height() * 0.5)
        }
-       $display.css(css);
+       this.$display.css(css);
 
        var coords = {
            x:this.$banner.position().left,

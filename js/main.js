@@ -73,7 +73,21 @@ var $banner, $cels,
 
 Collection = {};
 Collection.Cel = Backbone.Collection.extend({
-    model: Model.Cel
+    model: Model.Cel,
+    comparator:function(cel1, cel2) {
+        var id1 = cel1.id, id2 = cel2.id
+        cel1 = parseInt(cel1.attributes.screen.min.x);
+        cel2 = parseInt(cel2.attributes.screen.min.x);
+        if(cel1 > cel2) {
+            rv = -1;
+        } else if(cel1 === cel2) {
+            rv =  0;
+        } else {
+            rv = 1;
+        }
+        console.log(rv, id1, cel1, id2,cel2)
+        return rv;
+    }
 });
 
 
