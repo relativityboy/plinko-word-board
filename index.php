@@ -57,7 +57,8 @@ for ($i = 0; $i < $pegs; $i++) {
         </div>
         <div class="w-mode-setup show-controlpanel">enter setup</div>
         <div class="w-controlpanel controlpanel">
-            <a href="#" class="w-hide-settings btn-hide-settings">run</a>
+            <a href="#" class="w-mode-switch btn-hide-settings" data-val='run'>run</a>
+            <a href="#" class="w-mode-switch btn-hide-settings" data-val='test'>test</a>
             <div class="w-configuration">
                 <h4 class='subheader'>Board Config
                     <input class='w-save-config btn' type='button' value='Save'/>

@@ -418,7 +418,7 @@ Model.Board = Model.Box.extend({
         }
     },
     evtModeChange: function() {
-        if (this.get('mode') == 'run') {
+        if (this.get('mode') == 'run' || this.get('mode') == 'test-run') {
             this.set('enableCollisionDetection', true);
         }
 

@@ -11,7 +11,7 @@ View.ControlPanel = Backbone.View.extend({
     events: {
         'change .w-board-width': 'evtBoardSize',
         'change .w-board-height': 'evtBoardSize',
-        'click .w-hide-settings': 'evtHide',
+        'click .w-mode-switch': 'evtSetMode',
         //'click .w-toggle-calibration': 'evtToggleCalibration',
         'click .w-tracking-ctrl': 'evtToggleTracking',
         'click .w-set-min': 'evtSetMin',
@@ -57,8 +57,9 @@ View.ControlPanel = Backbone.View.extend({
     evtCalcCelCameraCoords:function() {
         this.model.calcServerCoords();
     },
-    evtHide: function() {
-        this.model.set('mode', 'run');
+    evtSetMode: function(e) {
+        console.log(e)
+        this.model.set('mode', $(e.currentTarget).data('val'));
     },
     /*evtToggleCalibration: function() {
         if (!this.model.get('calibrating')) {
@@ -204,18 +205,21 @@ View.CalibrationPoints = Backbone.View.extend({
         this.$max.css(css);
     },
     evtToggleCalibrationPoints: function() {
-        if (this.model.get('mode') === 'setup') {
-            this.$min.animate({opacity: 0.5});
-            this.$max.animate({opacity: 0.5});
-            this.$targetSprite.show();
-            this.targetSpriteOffsetX = this.$targetSprite.width() * 0.5;
-            this.targetSpriteOffsetY = this.$targetSprite.height() * 0.5;
-            this.target.on('change:screen', this.renderTargetPointer, this);
-        } else {
-            this.$min.animate({opacity: 0.0});
-            this.$max.animate({opacity: 0.0});
-            //this.$targetSprite.hide();
-            //this.target.off('change:screen', this.renderTargetPointer, this);
+        switch(this.model.get('mode')) {
+            case 'setup' :
+            case 'test' :
+                this.$min.animate({opacity: 0.5});
+                this.$max.animate({opacity: 0.5});
+                this.$targetSprite.show();
+                this.targetSpriteOffsetX = this.$targetSprite.width() * 0.5;
+                this.targetSpriteOffsetY = this.$targetSprite.height() * 0.5;
+                this.target.on('change:screen', this.renderTargetPointer, this);
+                break;
+            default :
+                this.$min.animate({opacity: 0.0});
+                this.$max.animate({opacity: 0.0});
+                this.$targetSprite.hide();
+                this.target.off('change:screen', this.renderTargetPointer, this);
         }
     },
     renderTargetPointer: function() {
@@ -322,11 +326,9 @@ View.Page = Backbone.View.extend({
         this.model.$el.css({width:this.model.get('width'), height:this.model.get('height')});
     },
     evtChangeMode:function() {
-      if(this.model.get('mode') === 'setup') {
-        this.$el.addClass('setup');
-      } else {
-        this.$el.removeClass('setup');
-      }
+        console.log('changeMode ', this.model.get('mode'))
+      this.$el.removeClass('setup').removeClass('test').removeClass('run');
+      this.$el.addClass(this.model.get('mode'));
     },
     evtModeSetup: function() {
         this.model.set('mode', 'setup');
