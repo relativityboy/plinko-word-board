@@ -33,7 +33,7 @@ for ($i = 0; $i < $pegs; $i++) {
 		<link type="text/css" rel="stylesheet" href="css/main.css"/>
 		<script type='text/javascript' src="js/jquery.js"></script>
 		<script type='text/javascript'>
-			appRoot = '/';
+			appRoot = '/northernspark/';
 		</script>
                 <script type='text/javascript' src="js/jquery-ui-1.10.4.custom.js"></script>
 
@@ -48,7 +48,7 @@ for ($i = 0; $i < $pegs; $i++) {
                 <div id='setup-banner' class='w-setup-banner setup-banner'>SETUP</div>
                 <div id="word-banner" class="w-word-banner word-banner">
                     <div class='w-hotzone reset-hotzone'></div>
-                    <div class='w-text-display text-display'><span>some text</span> some more text</div>    
+                    <div class='w-text-display text-display'><span>some text</span> some more text</div>
                 </div>
 			<table>
 	<?php
@@ -69,7 +69,7 @@ for ($i = 0; $i < $pegs; $i++) {
 		<div class="w-controlpanel controlpanel">
                     <a href="#" class="w-hide-settings btn-hide-settings">run</a>
                     <div class="w-configuration">
-                        <h4 class='subheader'>Board Config 
+                        <h4 class='subheader'>Board Config
                             <input class='w-save-config btn' type='button' value='Save'/>
                             <input class='w-load-config btn' type='button' value='Load'/>
                         </h4>

@@ -286,6 +286,8 @@ Model.Box = Backbone.Model.extend({
 Model.Board = Model.Box.extend({
     initialize: function(e) {
         this.$el = e.$el;
+		  this.attributes.width = e.$el.width();
+		  this.attributes.height = e.$el.height();
         this.attributes.cels = new Collection.Cel();
         this.attributes.resetCel = new Model.Cel({id:'reset'});
         this.attributes.resetCel.addEl($('.w-word-banner', this.$el[0]));
@@ -360,7 +362,7 @@ Model.Board = Model.Box.extend({
             for (var i = 0; i < cels.length; i++) {
                 if (cels.models[i].detectScreenCollision(target)) {
                     cels.models[i].setText('a pretty word');
-                } 
+                }
             }
         }
     },
@@ -392,8 +394,8 @@ Model.Board = Model.Box.extend({
     tracking: function(active) {
         return this.attributes.target.tracking(active);
     },
-    
-    
+
+
     toJSON: function() {
         var o = {};
         o.resetCel = this.attributes.resetCel.toJSON();

@@ -44,7 +44,7 @@ View.ControlPanel = Backbone.View.extend({
     evtBoardSize: function() {
         var val = {width: this.$boardWidth.val(), height: this.$boardHeight.val()}
         this.model.set(val);
-        
+
     },
     evtCalcCelCameraCoords:function() {
         this.model.calcServerCoords();
@@ -78,7 +78,7 @@ View.ControlPanel = Backbone.View.extend({
             this.model.tracking(true);
             this.$toggleTracking.val('disable tracking');
         }
-        
+
     },
     evtToggleCollisionDetection: function() {
         var enableCollisionDetection = (this.model.get('enableCollisionDetection'))? false : true;
@@ -134,14 +134,19 @@ View.CalibrationPoints = Backbone.View.extend({
         this.target = Model.Target();
         this.positionMax();
         this.model.on('change:mode', this.evtToggleCalibrationPoints, this);
+		  this.model.on('change:width change:height', this.positionMax, this)
     },
     positionMax: function() {
         var width = this.$max.width();
         var height = this.$max.height();
-        this.$max.css({
-            left: (this.$el.width() - width),
-            top: (this.$el.height() - height)
-        });
+		  console.log(width, height, this.$el[0]);
+		  console.log(this.$el.width(), this.$el.height());
+		  var css = {
+            left: (this.model.get('width') - width),
+            top: (this.model.get('height') - height)
+        }
+		  console.log(css);
+        this.$max.css(css);
     },
     evtToggleCalibrationPoints: function() {
         if (this.model.get('mode') === 'setup') {
@@ -194,21 +199,21 @@ View.Board = Backbone.View.extend({
            left:this.model.get('width') - 40
        }
        var $display = $('.w-text-display', this.$banner[0]);
-       
+
        this.$banner.css(css);
-       
+
        css = {
            width:this.$banner.height(),
            height:this.$banner.width()
        }
        $display.css(css);
-       
+
        css = {
            left:($display.height() * 0.5) - ($display.width() * 0.5),
            top:($display.width() * 0.5) - ($display.height() * 0.5)
-       }       
+       }
        $display.css(css);
-       
+
        var coords = {
            x:this.$banner.position().left,
            y:this.$banner.position().top
@@ -237,9 +242,9 @@ View.Page = Backbone.View.extend({
     },
     evtChangeMode:function() {
       if(this.model.get('mode') === 'setup') {
-        this.$el.addClass('setup');  
+        this.$el.addClass('setup');
       } else {
-        this.$el.removeClass('setup');  
+        this.$el.removeClass('setup');
       }
     },
     evtModeSetup: function() {
