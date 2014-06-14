@@ -239,8 +239,10 @@ Model.Box = Backbone.Model.extend({
                 this.set({id: newId});
                 newId++;
             } else {
-                if (!isNaN(parseInt(newId))) {
-                    newId = parseInt(this.id) + 1;
+                if (!isNaN(parseInt(this.id))) {
+                    if(parseInt(this.id) >= newId) {
+                        newId = parseInt(this.id) + 1;
+                    }
                 }
             }
             if (!this.attributes.hasOwnProperty('hotzone')) {
@@ -379,14 +381,6 @@ Model.Board = Model.Box.extend({
     },
     createCell: function() {
         this.attributes.cels.add({
-            screen: {
-                x: 0,
-                y: 0
-            },
-            camera: {
-                x: 0,
-                y: 0
-            },
         });
     },
     calcServerCoords: function() {

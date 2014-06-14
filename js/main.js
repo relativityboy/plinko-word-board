@@ -76,6 +76,7 @@ Collection.Cel = Backbone.Collection.extend({
     model: Model.Cel,
     comparator:function(cel1, cel2) {
         var id1 = cel1.id, id2 = cel2.id
+        console.log('comparator', cel1.attributes.screen, cel2.attributes.screen)
         cel1 = parseInt(cel1.attributes.screen.min.x);
         cel2 = parseInt(cel2.attributes.screen.min.x);
         if(cel1 > cel2) {
